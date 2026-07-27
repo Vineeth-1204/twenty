@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spider-Man Multiverse Calculator | Spidey HUD</title>
+  <meta name="description" content="A spectacular Spider-Man themed calculator web app featuring interactive suit themes, web-shooter sound effects, fancy HUD screen, scientific mode, and dynamic web animations.">
+  <!-- Google Fonts: Orbitron (Digital HUD), Outfit (Clean UI), Bangers (Comic Action) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Orbitron:wght@400;600;800;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-classic">
+  <!-- Interactive Spider Web Canvas Overlay -->
+  <canvas id="web-canvas"></canvas>
+
+  <!-- App Wrapper -->
+  <div class="app-container">
+
+    <!-- Top Navigation & Controls Bar -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="spider-badge" title="Spider-Man Multiverse Calculator">
+          <svg class="spider-icon" viewBox="0 0 100 100">
+            <path d="M50,15 C45,25 35,28 25,22 C20,32 30,42 40,45 C30,48 15,42 10,50 C20,55 35,52 42,50 C30,58 10,65 15,75 C25,70 38,62 44,56 C38,68 25,82 35,90 C43,78 48,65 50,58 C52,65 57,78 65,90 C75,82 62,68 56,56 C62,62 75,70 85,75 C90,65 70,58 58,50 C65,52 80,55 90,50 C85,42 70,48 60,45 C70,42 80,32 75,22 C65,28 55,25 50,15 Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="title-group">
+          <h1>SPIDEY<span>CALC</span></h1>
+          <span class="sub-title">MULTIVERSE EDITION</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Sound Toggle -->
+        <button id="sound-toggle" class="icon-btn active" title="Toggle Web-Shooter Sound Effects (Thwip!)" aria-label="Toggle Sound">
+          <span class="btn-icon">🔊</span>
+          <span class="btn-text">THWIP! SFX</span>
+        </button>
+
+        <!-- Scientific Mode Toggle -->
+        <button id="mode-toggle" class="icon-btn" title="Toggle Scientific Mode" aria-label="Toggle Scientific Mode">
+          <span class="btn-icon">🧪</span>
+          <span class="btn-text">SCI MODE</span>
+        </button>
+
+        <!-- History Drawer Toggle -->
+        <button id="history-toggle" class="icon-btn" title="Toggle Calculation History" aria-label="Toggle History Log">
+          <span class="btn-icon">📜</span>
+          <span class="btn-text">LOG</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Suit Theme Switcher Bar -->
+    <div class="suit-selector-bar">
+      <span class="suit-label">SELECT SUIT:</span>
+      <div class="suit-options">
+        <button class="suit-btn active" data-suit="classic" title="Classic Red & Blue Suit">
+          <span class="suit-color classic-swatch"></span>
+          <span>Classic</span>
+        </button>
+        <button class="suit-btn" data-suit="symbiote" title="Symbiote / Venom Black Suit">
+          <span class="suit-color symbiote-swatch"></span>
+          <span>Symbiote</span>
+        </button>
+        <button class="suit-btn" data-suit="iron" title="Iron Spider Nanotech Suit">
+          <span class="suit-color iron-swatch"></span>
+          <span>Iron Spider</span>
+        </button>
+        <button class="suit-btn" data-suit="miles" title="Miles Morales Spider-Verse Suit">
+          <span class="suit-color miles-swatch"></span>
+          <span>Miles M.</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Calculator Suit Chassis -->
+    <main class="calculator-chassis">
+      <div class="chassis-web-texture"></div>
+
+      <!-- Spidey Animated Mask Eyes Header -->
+      <div class="spidey-mask-container">
+        <div class="spidey-eyes" id="spidey-eyes" title="Spidey Lens Expressions">
+          <div class="eye left-eye">
+            <div class="eye-outer"></div>
+            <div class="eye-inner"></div>
+          </div>
+          <div class="spider-logo-center">
+            <svg viewBox="0 0 100 100" class="mini-spider">
+              <path d="M50 20 L40 40 L20 35 L35 50 L15 65 L40 60 L30 85 L50 70 L70 85 L60 60 L85 65 L65 50 L80 35 L60 40 Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="eye right-eye">
+            <div class="eye-outer"></div>
+            <div class="eye-inner"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fancy Hologram HUD Display -->
+      <div class="hud-display-container" id="hud-display">
+        <div class="hud-corner top-left"></div>
+        <div class="hud-corner top-right"></div>
+        <div class="hud-corner bottom-left"></div>
+        <div class="hud-corner bottom-right"></div>
+        <div class="hud-web-frame"></div>
+        <div class="hud-scanline"></div>
+
+        <!-- Expression History Ribbon -->
+        <div class="expression-display" id="expression-display">0</div>
+
+        <!-- Hologram Main Result Screen -->
+        <div class="result-wrapper">
+          <span class="hud-status-badge" id="angle-mode-badge">DEG</span>
+          <div class="main-result" id="main-result">0</div>
+        </div>
+
+        <!-- Comic Action Popup Container -->
+        <div class="comic-popup-layer" id="comic-popup-layer"></div>
+      </div>
+
+      <!-- Spidey Quote Speech Banner -->
+      <div class="spidey-speech-box">
+        <div class="spidey-avatar">🕷️</div>
+        <div class="speech-content" id="spidey-quote">
+          "With great power comes great mathematical precision!"
+        </div>
+      </div>
+
+      <!-- Keypad Section -->
+      <div class="keypad-wrapper">
+        
+        <!-- Scientific Keys Grid (Hidden by default, toggled via SCI MODE) -->
+        <div class="scientific-panel" id="scientific-panel">
+          <button class="key sci-key" data-action="deg-rad" id="deg-rad-btn">RAD</button>
+          <button class="key sci-key" data-action="sin">sin</button>
+          <button class="key sci-key" data-action="cos">cos</button>
+          <button class="key sci-key" data-action="tan">tan</button>
+          <button class="key sci-key" data-action="log">log</button>
+          <button class="key sci-key" data-action="ln">ln</button>
+          <button class="key sci-key" data-action="sqrt">√</button>
+          <button class="key sci-key" data-action="pow">x^y</button>
+          <button class="key sci-key" data-action="square">x²</button>
+          <button class="key sci-key" data-action="pi">π</button>
+          <button class="key sci-key" data-action="e">e</button>
+          <button class="key sci-key" data-action="open-paren">(</button>
+          <button class="key sci-key" data-action="close-paren">)</button>
+          <button class="key sci-key" data-action="abs">|x|</button>
+          <button class="key sci-key" data-action="factorial">n!</button>
+        </div>
+
+        <!-- Standard Keys Grid -->
+        <div class="standard-panel">
+          <button class="key action-key danger" data-action="clear-all">AC</button>
+          <button class="key action-key warning" data-action="clear-entry">C</button>
+          <button class="key action-key" data-action="backspace">⌫</button>
+          <button class="key operator-key" data-action="mod">%</button>
+          <button class="key operator-key" data-action="divide">÷</button>
+
+          <button class="key num-key" data-val="7">7</button>
+          <button class="key num-key" data-val="8">8</button>
+          <button class="key num-key" data-val="9">9</button>
+          <button class="key operator-key" data-action="multiply">×</button>
+          <button class="key operator-key" data-action="negate">±</button>
+
+          <button class="key num-key" data-val="4">4</button>
+          <button class="key num-key" data-val="5">5</button>
+          <button class="key num-key" data-val="6">6</button>
+          <button class="key operator-key" data-action="subtract">−</button>
+          <button class="key sci-quick" data-action="sqrt-quick">√</button>
+
+          <button class="key num-key" data-val="1">1</button>
+          <button class="key num-key" data-val="2">2</button>
+          <button class="key num-key" data-val="3">3</button>
+          <button class="key operator-key" data-action="add">+</button>
+          <button class="key sci-quick" data-action="square-quick">x²</button>
+
+          <button class="key num-key zero-btn" data-val="0">0</button>
+          <button class="key num-key" data-val=".">.</button>
+          <button class="key equals-key" data-action="equals">=</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- History Slide-out Drawer Panel -->
+    <aside class="history-drawer" id="history-drawer">
+      <div class="drawer-header">
+        <h3>SPIDEY MATH LOG</h3>
+        <button id="close-history" class="close-btn" title="Close Drawer">&times;</button>
+      </div>
+      <div class="history-list" id="history-list">
+        <div class="empty-history">No webs slung yet. Start calculating!</div>
+      </div>
+      <div class="drawer-footer">
+        <button id="clear-history-btn" class="clear-log-btn">CLEAR SPIDEY LOG</button>
+      </div>
+    </aside>
+
+    <!-- Overlay Backdrop for History Drawer -->
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
