@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WayneTech Bat-Computer | Smart To-Do & Tactical Mission Control</title>
+    <meta name="description" content="WayneTech Bat-Computer Smart To-Do List application. Track tactical missions, receive real-time deadline alerts, and earn Batarang points for completing objectives.">
+    <meta name="theme-color" content="#07090e">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Bat-Signal Animated Background Canvas -->
+    <canvas id="batSignalCanvas"></canvas>
+
+    <!-- Flying Batarang Projectile Overlay -->
+    <div id="batarangOverlay"></div>
+
+    <div class="app-container">
+        
+        <!-- Header Banner -->
+        <header class="banner-header">
+            <div class="banner-img-container">
+                <img src="./assets/bat_signal_banner.png" alt="WayneTech Bat-Signal Banner" class="banner-img">
+            </div>
+            <div class="banner-overlay">
+                <div class="header-brand">
+                    <svg class="bat-logo-svg" viewBox="0 0 100 100">
+                        <path d="M50,15 C65,15 85,25 98,35 C88,48 70,52 50,42 C30,52 12,48 2,35 C15,25 35,15 50,15 Z M50,42 C60,58 75,70 95,78 C80,88 62,82 50,68 C38,82 20,88 5,78 C25,70 40,58 50,42 Z"/>
+                    </svg>
+                    <div class="header-title-group">
+                        <h1>WayneTech <span class="system-status-dot" title="System Online"></span></h1>
+                        <p>BAT-COMPUTER TACTICAL MISSION CONTROL v4.2</p>
+                    </div>
+                </div>
+
+                <div class="header-controls">
+                    <!-- Gotham Clock -->
+                    <div class="gotham-clock-widget">
+                        <div class="gotham-clock-time" id="gothamClockTime">00:00:00</div>
+                        <div class="gotham-clock-label">GOTHAM CITY TIME</div>
+                    </div>
+
+                    <!-- Sound Toggle Button -->
+                    <button class="btn-tactical-icon" id="btnSoundToggle" title="Toggle Sound FX">🔊</button>
+
+                    <!-- Batarang Score Vault -->
+                    <div class="batarang-vault-bar" title="Total Earned Batarangs">
+                        <svg class="batarang-icon-md" viewBox="0 0 100 100">
+                            <path d="M50,15 C65,15 85,25 98,35 C88,48 70,52 50,42 C30,52 12,48 2,35 C15,25 35,15 50,15 Z M50,42 C60,58 75,70 95,78 C80,88 62,82 50,68 C38,82 20,88 5,78 C25,70 40,58 50,42 Z"/>
+                        </svg>
+                        <div>
+                            <div class="batarang-count-display" id="batarangCountDisplay">0</div>
+                            <div class="batarang-label">BATARANGS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            
+            <!-- Left Sidebar -->
+            <aside class="sidebar-column">
+                
+                <!-- Rank & XP Progression Panel -->
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">🛡️ VIGILANTE RANK</div>
+                    </div>
+                    <div class="rank-card">
+                        <div class="rank-header">
+                            <div class="rank-title" id="currentRankTitle">RANK: VIGILANTE</div>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="rankProgressFill"></div>
+                        </div>
+                        <div class="rank-subtext" id="rankSubtext">0 / 50 XP to Caped Crusader</div>
+                    </div>
+                </div>
+
+                <!-- Alfred's Radar (Deadline Reminder Feed) -->
+                <div class="glass-panel" style="margin-top: 20px;">
+                    <div class="panel-header">
+                        <div class="panel-title">🚨 ALFRED'S RADAR</div>
+                        <div style="font-size:10px; color:var(--threat-high);">REALTIME ALERTS</div>
+                    </div>
+                    <div class="reminder-feed-container" id="reminderFeed">
+                        <!-- Dynamic Alert Cards -->
+                    </div>
+                </div>
+
+                <!-- Trophy Vault & Badges -->
+                <div class="glass-panel" style="margin-top: 20px;">
+                    <div class="panel-header">
+                        <div class="panel-title">🏆 BATCAVE TROPHY VAULT</div>
+                    </div>
+                    <div class="badges-grid" id="badgesGrid">
+                        <!-- Dynamic Badges -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Directives Feed Area -->
+            <main class="main-column">
+                
+                <!-- Deploy Mission Form Panel -->
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">➕ DEPLOY NEW DIRECTIVE</div>
+                        <button class="btn-smart-suggest" id="btnSmartSuggest" type="button">✨ AI Bat-Assistant</button>
+                    </div>
+
+                    <form id="missionForm" class="mission-input-box">
+                        <div class="input-row">
+                            <input type="text" id="missionTitle" class="bat-input" placeholder="Mission Directive Title (e.g. Intercept Joker jammer, Fix Batmobile)..." required>
+                            <button type="submit" class="btn-bat-primary">
+                                <span>🦇 DEPLOY</span>
+                            </button>
+                        </div>
+
+                        <div class="input-row">
+                            <select id="threatSelect" class="bat-select">
+                                <option value="ALPHA">THREAT: ALPHA (High / 30 XP)</option>
+                                <option value="BETA" selected>THREAT: BETA (Medium / 20 XP)</option>
+                                <option value="GAMMA">THREAT: GAMMA (Low / 10 XP)</option>
+                            </select>
+
+                            <select id="categorySelect" class="bat-select">
+                                <option value="Arkham Cases">🃏 Arkham Cases</option>
+                                <option value="Gotham Patrol" selected>🦇 Gotham Patrol</option>
+                                <option value="Wayne Corp">🏢 Wayne Corp</option>
+                                <option value="Batcave">🔧 Batcave Maint</option>
+                            </select>
+
+                            <input type="datetime-local" id="deadlineInput" class="bat-input" title="Deadline Date & Time">
+                        </div>
+
+                        <div class="input-row">
+                            <textarea id="subtasksInput" class="bat-input" rows="2" placeholder="Subtask Checklist Steps (1 per line)..."></textarea>
+                        </div>
+
+                        <!-- Presets -->
+                        <div class="preset-pills">
+                            <span class="preset-pill" data-preset-idx="0">⚡ Quick Add: Crime Alley Patrol</span>
+                            <span class="preset-pill" data-preset-idx="1">🃏 Quick Add: Arkham Log Review</span>
+                            <span class="preset-pill" data-preset-idx="2">🔧 Quick Add: Batmobile Diagnostic</span>
+                            <span class="preset-pill" data-preset-idx="3">🏢 Quick Add: Wayne Corp Audit</span>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Mission Filters & Directives Feed -->
+                <div class="glass-panel" style="margin-top: 24px;">
+                    <div class="filter-toolbar">
+                        <div class="filter-tabs">
+                            <button class="filter-tab active" data-filter="all">ALL DIRECTIVES</button>
+                            <button class="filter-tab" data-filter="active">ACTIVE</button>
+                            <button class="filter-tab" data-filter="critical">🚨 ALPHA THREAT</button>
+                            <button class="filter-tab" data-filter="arkham">🃏 ARKHAM CASES</button>
+                            <button class="filter-tab" data-filter="completed">✅ COMPLETED</button>
+                        </div>
+
+                        <div class="search-box">
+                            <input type="text" id="searchInput" class="bat-input" style="padding: 8px 12px; font-size:12px;" placeholder="🔍 Search Directives...">
+                        </div>
+                    </div>
+
+                    <!-- Mission Cards List -->
+                    <div id="missionsList" class="missions-list">
+                        <!-- Dynamic Mission Cards -->
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="audio.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

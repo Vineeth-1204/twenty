@@ -1,0 +1,878 @@
+/* ==========================================================================
+   WAYNETECH BAT-COMPUTER INTERFACE - DESIGN SYSTEM & STYLESHEET
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;800;900&display=swap');
+
+:root {
+    /* Color Palette */
+    --bg-dark: #07090e;
+    --bg-card: rgba(16, 22, 34, 0.85);
+    --bg-card-hover: rgba(23, 31, 48, 0.95);
+    --bg-panel: rgba(11, 15, 23, 0.75);
+    --border-color: rgba(255, 204, 0, 0.15);
+    --border-glow: rgba(255, 204, 0, 0.4);
+    
+    --bat-yellow: #ffcc00;
+    --bat-yellow-glow: rgba(255, 204, 0, 0.6);
+    --tech-cyan: #00f0ff;
+    --tech-cyan-glow: rgba(0, 240, 255, 0.5);
+    --threat-high: #ff3366;
+    --threat-high-glow: rgba(ff, 51, 102, 0.6);
+    --threat-medium: #ff9900;
+    --threat-low: #00ff99;
+    --text-primary: #f0f4f8;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    /* Layout */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --font-heading: 'Orbitron', -apple-system, sans-serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.05) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(255, 204, 0, 0.03) 0%, transparent 50%),
+        linear-gradient(to bottom, rgba(7, 9, 14, 0.95), rgba(7, 9, 14, 0.98));
+    position: relative;
+}
+
+/* Background Scanlines Overlay */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+/* Bat-Signal Background Canvas */
+#batSignalCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+}
+
+/* App Wrapper */
+.app-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Top Banner Header */
+.banner-header {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255, 204, 0, 0.1);
+    margin-bottom: 24px;
+    background: #000;
+}
+
+.banner-img-container {
+    position: relative;
+    height: 160px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7) contrast(1.1);
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(7, 9, 14, 0.95) 0%, rgba(7, 9, 14, 0.4) 50%, rgba(7, 9, 14, 0.95) 100%),
+                linear-gradient(0deg, rgba(7, 9, 14, 1) 0%, transparent 60%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.bat-logo-svg {
+    width: 54px;
+    height: 54px;
+    fill: var(--bat-yellow);
+    filter: drop-shadow(0 0 12px var(--bat-yellow-glow));
+    animation: pulseGlow 3s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    0% { filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.4)); }
+    100% { filter: drop-shadow(0 0 20px rgba(255, 204, 0, 0.8)); }
+}
+
+.header-title-group h1 {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: var(--bat-yellow);
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.system-status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--tech-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--tech-cyan);
+    display: inline-block;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.header-title-group p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    font-family: var(--font-heading);
+    margin-top: 4px;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Tactical Clock Widget */
+.gotham-clock-widget {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    text-align: right;
+}
+
+.gotham-clock-time {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    color: var(--tech-cyan);
+    letter-spacing: 1px;
+}
+
+.gotham-clock-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* Sound Toggle & Action Buttons */
+.btn-tactical-icon {
+    background: rgba(16, 22, 34, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--bat-yellow);
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: justify-content;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.btn-tactical-icon:hover {
+    background: rgba(255, 204, 0, 0.15);
+    border-color: var(--bat-yellow);
+    box-shadow: 0 0 12px var(--bat-yellow-glow);
+    transform: translateY(-2px);
+}
+
+/* Batarang Score Vault Bar */
+.batarang-vault-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--bat-yellow);
+    padding: 8px 18px;
+    border-radius: var(--radius-md);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+}
+
+.batarang-icon-md {
+    width: 28px;
+    height: 28px;
+    fill: var(--bat-yellow);
+    filter: drop-shadow(0 0 6px var(--bat-yellow));
+}
+
+.batarang-count-display {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 0 8px var(--bat-yellow);
+}
+
+.batarang-label {
+    font-size: 11px;
+    color: var(--bat-yellow);
+    font-family: var(--font-heading);
+    letter-spacing: 1px;
+}
+
+/* Layout Grid */
+.main-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 1024px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Glass Panels */
+.glass-panel {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    transition: var(--transition-normal);
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.panel-title {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    color: var(--bat-yellow);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Rank & Progression Widget */
+.rank-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.rank-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.rank-title {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    color: var(--tech-cyan);
+    font-weight: 700;
+}
+
+.rank-subtext {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 8px 0;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--tech-cyan), var(--bat-yellow));
+    box-shadow: 0 0 10px var(--tech-cyan);
+    transition: width 0.5s ease-out;
+}
+
+/* Reminder Alert Feed Widget */
+.reminder-feed-container {
+    max-height: 240px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.reminder-alert-card {
+    background: rgba(255, 51, 102, 0.1);
+    border-left: 3px solid var(--threat-high);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: alertPulse 2s infinite;
+}
+
+.reminder-alert-card.warning {
+    background: rgba(255, 153, 0, 0.1);
+    border-left-color: var(--threat-medium);
+    animation: none;
+}
+
+@keyframes alertPulse {
+    0%, 100% { box-shadow: 0 0 0 rgba(255, 51, 102, 0); }
+    50% { box-shadow: inset 0 0 10px rgba(255, 51, 102, 0.3); }
+}
+
+.alert-text {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.alert-timer {
+    font-family: var(--font-heading);
+    font-size: 12px;
+    color: var(--threat-high);
+}
+
+/* Trophies & Badges Grid */
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.badge-item {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    text-align: center;
+    opacity: 0.4;
+    filter: grayscale(1);
+    transition: var(--transition-normal);
+}
+
+.badge-item.unlocked {
+    opacity: 1;
+    filter: grayscale(0);
+    border-color: var(--bat-yellow);
+    background: rgba(255, 204, 0, 0.05);
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.15);
+}
+
+.badge-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+
+.badge-name {
+    font-size: 10px;
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+}
+
+/* Deploy Mission Form */
+.mission-input-box {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.input-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.bat-input {
+    background: rgba(10, 14, 22, 0.9);
+    border: 1px solid rgba(255, 204, 0, 0.2);
+    color: #ffffff;
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    width: 100%;
+    outline: none;
+    transition: var(--transition-fast);
+}
+
+.bat-input:focus {
+    border-color: var(--bat-yellow);
+    box-shadow: 0 0 12px rgba(255, 204, 0, 0.3);
+}
+
+.bat-select {
+    background: rgba(10, 14, 22, 0.9);
+    border: 1px solid rgba(255, 204, 0, 0.2);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    outline: none;
+    cursor: pointer;
+}
+
+.bat-select:focus {
+    border-color: var(--bat-yellow);
+}
+
+.btn-bat-primary {
+    background: linear-gradient(135deg, #ffcc00, #e6b800);
+    color: #000000;
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(255, 204, 0, 0.4);
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.btn-bat-primary:hover {
+    background: linear-gradient(135deg, #ffe066, #ffcc00);
+    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+.btn-smart-suggest {
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid var(--tech-cyan);
+    color: var(--tech-cyan);
+    font-family: var(--font-heading);
+    font-size: 11px;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn-smart-suggest:hover {
+    background: rgba(0, 240, 255, 0.25);
+    box-shadow: 0 0 10px var(--tech-cyan-glow);
+}
+
+/* Mission Quick Presets */
+.preset-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.preset-pill {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.preset-pill:hover {
+    border-color: var(--bat-yellow);
+    color: var(--bat-yellow);
+    background: rgba(255, 204, 0, 0.1);
+}
+
+/* Filter Bar */
+.filter-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.filter-tab {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--font-heading);
+    font-size: 11px;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.filter-tab.active {
+    background: var(--bat-yellow);
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
+}
+
+.search-box {
+    max-width: 250px;
+}
+
+/* Mission Cards List */
+.missions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mission-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 204, 0, 0.12);
+    border-left: 4px solid var(--bat-yellow);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    position: relative;
+    transition: var(--transition-normal);
+}
+
+.mission-card:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(255, 204, 0, 0.3);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.mission-card.threat-ALPHA {
+    border-left-color: var(--threat-high);
+}
+
+.mission-card.threat-BETA {
+    border-left-color: var(--threat-medium);
+}
+
+.mission-card.threat-GAMMA {
+    border-left-color: var(--threat-low);
+}
+
+.mission-card.completed {
+    opacity: 0.6;
+    border-left-color: var(--text-muted);
+}
+
+.mission-card.completed .mission-title {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.mission-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.mission-main-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.mission-checkbox {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--bat-yellow);
+    cursor: pointer;
+    margin-top: 2px;
+}
+
+.mission-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 6px;
+}
+
+.mission-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.badge-pill {
+    font-size: 10px;
+    font-family: var(--font-heading);
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.badge-threat-ALPHA {
+    background: rgba(255, 51, 102, 0.2);
+    color: var(--threat-high);
+    border: 1px solid var(--threat-high);
+}
+
+.badge-threat-BETA {
+    background: rgba(255, 153, 0, 0.2);
+    color: var(--threat-medium);
+    border: 1px solid var(--threat-medium);
+}
+
+.badge-threat-GAMMA {
+    background: rgba(0, 255, 153, 0.2);
+    color: var(--threat-low);
+    border: 1px solid var(--threat-low);
+}
+
+.badge-category {
+    background: rgba(0, 240, 255, 0.15);
+    color: var(--tech-cyan);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.badge-bounty {
+    background: rgba(255, 204, 0, 0.15);
+    color: var(--bat-yellow);
+    border: 1px solid var(--bat-yellow);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.deadline-pill {
+    font-family: var(--font-heading);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.deadline-pill.normal {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.deadline-pill.warning {
+    background: rgba(255, 153, 0, 0.2);
+    color: var(--threat-medium);
+    border: 1px solid var(--threat-medium);
+}
+
+.deadline-pill.critical {
+    background: rgba(255, 51, 102, 0.25);
+    color: var(--threat-high);
+    border: 1px solid var(--threat-high);
+    animation: flashCritical 1.5s infinite;
+}
+
+@keyframes flashCritical {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Subtasks Checklist */
+.subtasks-container {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.subtask-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.subtask-item.completed {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.subtask-checkbox {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--tech-cyan);
+    cursor: pointer;
+}
+
+/* Card Actions */
+.mission-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icon-action {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: var(--transition-fast);
+}
+
+.btn-icon-action:hover {
+    color: var(--threat-high);
+    background: rgba(255, 51, 102, 0.1);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+/* Flying Batarang Projectile Overlay */
+#batarangOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.flying-batarang {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    fill: var(--bat-yellow);
+    filter: drop-shadow(0 0 15px var(--bat-yellow));
+    animation: flyAndSpin 0.75s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes flyAndSpin {
+    0% {
+        transform: translate(var(--startX), var(--startY)) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(calc(var(--startX) + (var(--endX) - var(--startX)) * 0.5), calc(var(--startY) + (var(--endY) - var(--startY)) * 0.5 - 100px)) scale(1.4) rotate(540deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--endX), var(--endY)) scale(0.2) rotate(1080deg);
+        opacity: 0;
+    }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(7, 9, 14, 0.8);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 204, 0, 0.3);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bat-yellow);
+}
