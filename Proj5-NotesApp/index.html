@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>メモ帳 | Memochō — Japanese Notes</title>
+  <meta name="description" content="A retro 90s Japanese-style notes app. Write, organize, and cherish your thoughts with kawaii aesthetics." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+JP:wght@400;700;900&family=VT323&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Scanline overlay -->
+  <div class="scanlines" aria-hidden="true"></div>
+  <!-- Pixel art corner decorations -->
+  <div class="corner-deco corner-tl" aria-hidden="true">✦</div>
+  <div class="corner-deco corner-tr" aria-hidden="true">✦</div>
+  <div class="corner-deco corner-bl" aria-hidden="true">✦</div>
+  <div class="corner-deco corner-br" aria-hidden="true">✦</div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo-block">
+        <span class="logo-pixel" aria-hidden="true">📓</span>
+        <div class="logo-text">
+          <span class="logo-jp">メモ帳</span>
+          <span class="logo-en">Memochō</span>
+        </div>
+        <div class="header-badges">
+          <span class="badge badge-pink">v1.99</span>
+          <span class="badge badge-cyan">©1999</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-new-note" class="btn btn-primary pixel-btn" title="New Note (Ctrl+N)">
+          <span>＋ NEW NOTE</span>
+        </button>
+        <button id="btn-toggle-theme" class="btn btn-icon pixel-btn" title="Toggle CRT effect" aria-label="Toggle CRT effect">
+          <span id="theme-icon">📺</span>
+        </button>
+        <button id="btn-export" class="btn btn-icon pixel-btn" title="Export all notes" aria-label="Export notes">
+          <span>💾</span>
+        </button>
+      </div>
+    </div>
+    <!-- Ticker tape -->
+    <div class="ticker-wrap">
+      <div class="ticker-tape" id="ticker-tape">
+        <span>✿ ようこそ！WELCOME TO MEMOCHŌ ✿</span>
+        <span>★ 90s JAPANESE NOTES EXPERIENCE ★</span>
+        <span>♪ YOUR THOUGHTS, CAPTURED FOREVER ♪</span>
+        <span>❋ PRESS CTRL+N FOR A NEW NOTE ❋</span>
+        <span>✿ ようこそ！WELCOME TO MEMOCHŌ ✿</span>
+        <span>★ 90s JAPANESE NOTES EXPERIENCE ★</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN LAYOUT ===== -->
+  <main class="app-main">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Search -->
+      <div class="sidebar-section">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="検索… Search…" autocomplete="off" />
+          <button id="btn-clear-search" class="clear-search" title="Clear search" aria-label="Clear search">✕</button>
+        </div>
+      </div>
+
+      <!-- Filter tags -->
+      <div class="sidebar-section">
+        <div class="section-label">◆ CATEGORIES ◆</div>
+        <div class="filter-chips" id="filter-chips">
+          <button class="chip chip-active" data-filter="all">ALL (0)</button>
+          <button class="chip" data-filter="pinned">📌 PINNED</button>
+          <button class="chip" data-filter="archived">🗃 ARCHIVED</button>
+        </div>
+      </div>
+
+      <!-- Tag filter -->
+      <div class="sidebar-section">
+        <div class="section-label">◆ TAGS ◆</div>
+        <div class="tag-cloud" id="tag-cloud">
+          <span class="no-tags-msg">No tags yet!</span>
+        </div>
+      </div>
+
+      <!-- Sort -->
+      <div class="sidebar-section">
+        <div class="section-label">◆ SORT BY ◆</div>
+        <div class="sort-options">
+          <button class="sort-btn sort-active" data-sort="modified">MODIFIED</button>
+          <button class="sort-btn" data-sort="created">CREATED</button>
+          <button class="sort-btn" data-sort="title">TITLE A-Z</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="sidebar-section sidebar-stats">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-num" id="stat-total">0</span>
+            <span class="stat-label">TOTAL</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" id="stat-pinned">0</span>
+            <span class="stat-label">PINNED</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" id="stat-words">0</span>
+            <span class="stat-label">WORDS</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== NOTES GRID ===== -->
+    <section class="notes-area" id="notes-area">
+      <!-- View toggle -->
+      <div class="notes-toolbar">
+        <div class="results-count" id="results-count">0 notes</div>
+        <div class="view-toggle">
+          <button class="view-btn view-active" id="btn-grid-view" title="Grid view" aria-label="Grid view">▦</button>
+          <button class="view-btn" id="btn-list-view" title="List view" aria-label="List view">☰</button>
+        </div>
+      </div>
+      <!-- Notes container -->
+      <div class="notes-grid" id="notes-grid">
+        <!-- Notes rendered here by JS -->
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">📝</div>
+          <div class="empty-title">No notes yet!</div>
+          <div class="empty-subtitle">まだメモがありません</div>
+          <button class="btn btn-primary pixel-btn" id="btn-empty-new">Create your first note</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== NOTE EDITOR MODAL ===== -->
+  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal" id="modal">
+      <!-- Modal header -->
+      <div class="modal-header" id="modal-header">
+        <div class="modal-title-bar">
+          <div class="modal-window-dots">
+            <span class="dot dot-red" id="btn-close-modal" title="Close" role="button" tabindex="0" aria-label="Close editor"></span>
+            <span class="dot dot-yellow" id="btn-pin-modal" title="Pin note" role="button" tabindex="0" aria-label="Pin note"></span>
+            <span class="dot dot-green" id="btn-maximize-modal" title="Maximize" role="button" tabindex="0" aria-label="Maximize editor"></span>
+          </div>
+          <span class="modal-window-title" id="modal-window-title">✎ New Note — メモ帳</span>
+          <div class="modal-note-color-dots" id="modal-color-picker">
+            <span class="note-color-dot active" data-color="sakura" title="Sakura Pink" aria-label="Sakura Pink" role="button" tabindex="0"></span>
+            <span class="note-color-dot" data-color="mint" title="Mint Green" aria-label="Mint Green" role="button" tabindex="0"></span>
+            <span class="note-color-dot" data-color="lavender" title="Lavender" aria-label="Lavender" role="button" tabindex="0"></span>
+            <span class="note-color-dot" data-color="yolk" title="Yolk Yellow" aria-label="Yolk Yellow" role="button" tabindex="0"></span>
+            <span class="note-color-dot" data-color="neon" title="Neon Cyan" aria-label="Neon Cyan" role="button" tabindex="0"></span>
+            <span class="note-color-dot" data-color="paper" title="Paper White" aria-label="Paper White" role="button" tabindex="0"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <!-- Title -->
+        <input type="text" id="note-title" class="note-title-input" placeholder="タイトル… Enter Title…" maxlength="100" />
+
+        <!-- Tags input -->
+        <div class="tags-row">
+          <span class="tags-label">🏷 TAGS:</span>
+          <div class="tag-input-area" id="tag-input-area">
+            <div class="tags-list" id="tags-list"></div>
+            <input type="text" id="tag-input" class="tag-input" placeholder="Add tag + ENTER" maxlength="30" />
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="editor-toolbar" id="editor-toolbar">
+          <button class="tool-btn" data-action="bold" title="Bold (Ctrl+B)" aria-label="Bold">𝐁</button>
+          <button class="tool-btn" data-action="italic" title="Italic (Ctrl+I)" aria-label="Italic">𝑰</button>
+          <button class="tool-btn" data-action="strike" title="Strikethrough" aria-label="Strikethrough">S̶</button>
+          <div class="toolbar-sep"></div>
+          <button class="tool-btn" data-action="h1" title="Heading 1" aria-label="Heading 1">H1</button>
+          <button class="tool-btn" data-action="h2" title="Heading 2" aria-label="Heading 2">H2</button>
+          <div class="toolbar-sep"></div>
+          <button class="tool-btn" data-action="ul" title="Bullet List" aria-label="Bullet list">• List</button>
+          <button class="tool-btn" data-action="ol" title="Numbered List" aria-label="Numbered list"># List</button>
+          <button class="tool-btn" data-action="checkbox" title="Checkbox" aria-label="Checkbox">☑ Check</button>
+          <div class="toolbar-sep"></div>
+          <button class="tool-btn" data-action="hr" title="Divider" aria-label="Divider">───</button>
+          <button class="tool-btn" data-action="stamp" title="Insert JP Stamp" aria-label="Insert stamp">印</button>
+          <div class="toolbar-sep"></div>
+          <button class="tool-btn tool-btn-toggle" id="btn-preview-toggle" title="Preview mode" aria-label="Toggle preview">👁 Preview</button>
+        </div>
+
+        <!-- Editor / Preview split -->
+        <div class="editor-container">
+          <textarea id="note-content" class="note-content" placeholder="ここに書いてください… Write your note here…&#10;&#10;Supports Markdown! **bold** *italic* # Heading&#10;- Bullet lists&#10;[ ] Checkboxes"></textarea>
+          <div id="note-preview" class="note-preview hidden" aria-live="polite"></div>
+        </div>
+
+        <!-- Footer bar -->
+        <div class="modal-footer">
+          <div class="footer-meta">
+            <span id="char-count">0 chars</span>
+            <span class="meta-sep">•</span>
+            <span id="word-count">0 words</span>
+            <span class="meta-sep">•</span>
+            <span id="save-status" class="save-status">✓ Saved</span>
+          </div>
+          <div class="footer-actions">
+            <button class="btn btn-danger pixel-btn" id="btn-delete-note">🗑 DELETE</button>
+            <button class="btn btn-secondary pixel-btn" id="btn-archive-note">🗃 ARCHIVE</button>
+            <button class="btn btn-primary pixel-btn" id="btn-save-note">💾 SAVE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- ===== CONFIRM DIALOG ===== -->
+  <div class="confirm-overlay hidden" id="confirm-overlay">
+    <div class="confirm-dialog">
+      <div class="confirm-title" id="confirm-title">⚠ CONFIRM?</div>
+      <div class="confirm-msg" id="confirm-msg">Are you sure?</div>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary pixel-btn" id="confirm-cancel">CANCEL</button>
+        <button class="btn btn-danger pixel-btn" id="confirm-ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== KEYBOARD SHORTCUTS PANEL ===== -->
+  <button class="shortcuts-fab" id="shortcuts-fab" title="Keyboard shortcuts" aria-label="Show keyboard shortcuts">⌨</button>
+  <div class="shortcuts-panel hidden" id="shortcuts-panel">
+    <div class="shortcuts-title">⌨ KEYBOARD SHORTCUTS</div>
+    <table class="shortcuts-table">
+      <tr><td>Ctrl + N</td><td>New Note</td></tr>
+      <tr><td>Ctrl + S</td><td>Save Note</td></tr>
+      <tr><td>Ctrl + B</td><td>Bold</td></tr>
+      <tr><td>Ctrl + I</td><td>Italic</td></tr>
+      <tr><td>Ctrl + P</td><td>Toggle Preview</td></tr>
+      <tr><td>Escape</td><td>Close Modal</td></tr>
+    </table>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
