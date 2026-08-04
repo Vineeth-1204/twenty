@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime Chat | Modern WebSocket Application</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- SockJS and STOMP Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+
+    <!-- Background Animated Blobs -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <!-- Username / Join Modal Page -->
+    <div id="username-page" class="modal-overlay">
+        <div class="glass-card modal-card">
+            <div class="logo-badge">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </div>
+            <h2>Welcome to Realtime Chat</h2>
+            <p class="subtitle">Enter your username to connect to live WebSocket channels.</p>
+
+            <form id="usernameForm">
+                <div class="form-group">
+                    <label for="name">Username</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <input type="text" id="name" placeholder="e.g. Vineeth" autocomplete="off" maxlength="25" autofocus required />
+                    </div>
+                    <span id="name-error" class="error-text">Please enter a valid username</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="roomSelect">Choose Chat Room</label>
+                    <select id="roomSelect" class="custom-select">
+                        <option value="general">💬 General</option>
+                        <option value="development">💻 Development</option>
+                        <option value="gaming">🎮 Gaming</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    Join Chat
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Chat Workspace -->
+    <div id="chat-page" class="chat-container hidden">
+        
+        <!-- Sidebar Navigation & Presence -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+                    <span class="brand-name">PulseChat</span>
+                </div>
+                <button id="close-sidebar-btn" class="icon-btn mobile-only" title="Close Menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Chat Rooms -->
+            <div class="sidebar-section">
+                <h4 class="section-title">Rooms</h4>
+                <nav class="room-nav">
+                    <button class="room-btn active" data-room="general">
+                        <span class="room-icon">💬</span>
+                        <span class="room-name">General</span>
+                    </button>
+                    <button class="room-btn" data-room="development">
+                        <span class="room-icon">💻</span>
+                        <span class="room-name">Development</span>
+                    </button>
+                    <button class="room-btn" data-room="gaming">
+                        <span class="room-icon">🎮</span>
+                        <span class="room-name">Gaming</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Online Users List -->
+            <div class="sidebar-section users-section">
+                <div class="section-header">
+                    <h4 class="section-title">Online Users</h4>
+                    <span id="user-count-badge" class="badge">0</span>
+                </div>
+                <ul id="online-users-list" class="online-users-list">
+                    <!-- Populated dynamically -->
+                </ul>
+            </div>
+
+            <!-- User Info Profile Footer -->
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar" id="current-user-avatar">V</div>
+                    <div class="user-details">
+                        <span id="current-user-name" class="profile-name">Vineeth</span>
+                        <span class="profile-status"><span class="status-dot online"></span> Connected</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sidebar Mobile Backdrop -->
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+        <!-- Main Chat Content -->
+        <main class="chat-main">
+            
+            <!-- Chat Header Bar -->
+            <header class="chat-header">
+                <div class="header-left">
+                    <button id="toggle-sidebar-btn" class="icon-btn mobile-only" title="Open Sidebar">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div class="room-info">
+                        <h3 id="current-room-title"># General</h3>
+                        <p id="room-subtitle" class="room-subtitle">Real-time WebSocket channel</p>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Light/Dark Theme">
+                        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="moon-icon hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Message Area -->
+            <div id="messageArea" class="message-feed">
+                <!-- Messages appended dynamically -->
+            </div>
+
+            <!-- Typing Indicator Bar -->
+            <div id="typing-indicator" class="typing-indicator hidden">
+                <span class="typing-dots">
+                    <span></span><span></span><span></span>
+                </span>
+                <span id="typing-text" class="typing-text">Someone is typing...</span>
+            </div>
+
+            <!-- Emoji Quick Drawer -->
+            <div id="emoji-drawer" class="emoji-drawer hidden">
+                <button class="emoji-btn" type="button">😊</button>
+                <button class="emoji-btn" type="button">😂</button>
+                <button class="emoji-btn" type="button">👍</button>
+                <button class="emoji-btn" type="button">❤️</button>
+                <button class="emoji-btn" type="button">🔥</button>
+                <button class="emoji-btn" type="button">🎉</button>
+                <button class="emoji-btn" type="button">🚀</button>
+                <button class="emoji-btn" type="button">💻</button>
+                <button class="emoji-btn" type="button">👋</button>
+                <button class="emoji-btn" type="button">🙏</button>
+            </div>
+
+            <!-- Message Input Form -->
+            <footer class="chat-footer">
+                <form id="messageForm" class="message-form">
+                    <button id="emoji-toggle-btn" type="button" class="icon-btn" title="Insert Emoji">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                        </svg>
+                    </button>
+                    
+                    <div class="input-container">
+                        <input type="text" id="message" placeholder="Type a message..." autocomplete="off" autofocus />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary send-btn">
+                        <span>Send</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+            </footer>
+
+        </main>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
